@@ -3,309 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PUTRA BAROKAH FARM - Online Sync</title>
+    <title>PUTRA BAROKAH FARM</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
     <style>
         body {
-            background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://files.catbox.moe/f74gv3.jpg');
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1511117833452-1811aa090c2a?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(15px);
-            border-radius: 2.5rem;
+        .font-brand {
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 4px;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.5);
         }
-        .stat-card:hover { transform: translateY(-5px); cursor: pointer; background: white; }
-        .active-card-indukan { border: 4px solid #ec4899; }
-        .active-card-pejantan { border: 4px solid #3b82f6; }
-        .active-card-anakan { border: 4px solid #eab308; }
-        .img-table { width: 65px; height: 65px; object-fit: cover; border-radius: 1.2rem; }
-        .hidden-view { display: none; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
+        .card-stat { transition: all 0.3s ease; }
+        .card-stat:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="font-sans text-gray-900">
+<body class="min-h-screen pb-20">
 
-    <div class="flex h-screen overflow-hidden">
-        <main class="flex-1 overflow-y-auto p-4 md:p-10">
-            
-            <header class="mb-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div>
-                    <h2 class="text-5xl font-black text-white tracking-tighter drop-shadow-2xl uppercase">PUTRA BAROKAH<br>FARM👑</h2>
-                    <p class="text-yellow-400 font-bold uppercase tracking-[0.3em] text-[10px] mt-2">Sinkronisasi Cloud Aktif 🟢</p>
-                </div>
-                <button onclick="openAddModal()" class="bg-yellow-500 hover:bg-yellow-400 text-green-950 px-8 py-4 rounded-3xl font-black flex items-center gap-3 uppercase tracking-wider text-sm shadow-2xl transition">
-                    <i class="fas fa-plus-circle text-xl"></i> Tambah Data
-                </button>
-            </header>
-
-            <!-- Kartu Statistik -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div onclick="showData('Indukan')" id="card-Indukan" class="stat-card glass-card p-8 border-l-[12px] border-pink-500 relative overflow-hidden transition-all">
-                    <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest text-pink-600">Total Indukan</p>
-                    <h3 id="count-indukan" class="text-6xl font-black text-gray-800 mt-2 tracking-tighter">0</h3>
-                    <i class="fas fa-venus absolute -right-4 -bottom-4 text-pink-100 text-8xl opacity-40"></i>
-                </div>
-                <div onclick="showData('Pejantan')" id="card-Pejantan" class="stat-card glass-card p-8 border-l-[12px] border-blue-500 relative overflow-hidden transition-all">
-                    <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest text-blue-600">Total Pejantan</p>
-                    <h3 id="count-pejantan" class="text-6xl font-black text-gray-800 mt-2 tracking-tighter">0</h3>
-                    <i class="fas fa-mars absolute -right-4 -bottom-4 text-blue-100 text-8xl opacity-40"></i>
-                </div>
-                <div onclick="showData('Anakan')" id="card-Anakan" class="stat-card glass-card p-8 border-l-[12px] border-yellow-500 relative overflow-hidden transition-all">
-                    <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest text-yellow-600">Anakan (Cempe)</p>
-                    <h3 id="count-anakan" class="text-6xl font-black text-gray-800 mt-2 tracking-tighter">0</h3>
-                    <i class="fas fa-baby absolute -right-4 -bottom-4 text-yellow-100 text-8xl opacity-40"></i>
-                </div>
-            </div>
-
-            <!-- Bagian Tabel -->
-            <section id="data-section" class="hidden-view">
-                <div class="glass-card shadow-2xl overflow-hidden mb-20 animate-fade">
-                    <div class="p-6 bg-white/50 border-b flex justify-between items-center">
-                        <h4 id="table-title" class="font-black text-xl text-green-800 uppercase tracking-tighter">Data Terpilih</h4>
-                        <button onclick="hideData()" class="text-red-500 font-bold uppercase text-xs tracking-widest hover:scale-110 transition"><i class="fas fa-times-circle mr-1"></i> Tutup</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-100/50 text-gray-500 text-[10px] font-black uppercase tracking-widest">
-                                <tr>
-                                    <th class="px-8 py-5 text-center">Foto</th>
-                                    <th class="px-8 py-5">Nama/Tag ID</th>
-                                    <th class="px-8 py-5 text-center">JK</th>
-                                    <th class="px-8 py-5 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body" class="divide-y divide-gray-200"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        </main>
+    <!-- TOMBOL TAMBAH (HANYA ADMIN) -->
+    <div id="adminMenu" class="fixed top-5 right-5 z-50 hidden">
+        <button onclick="toggleForm()" class="bg-green-600 hover:bg-green-500 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl font-bold">＋</button>
     </div>
 
-    <!-- MODAL TAMBAH DATA -->
-    <div id="modalAdd" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-        <div class="bg-white rounded-[3rem] w-full max-w-lg p-10 overflow-y-auto max-h-[95vh] shadow-2xl">
-            <h3 class="text-3xl font-black text-green-900 mb-8 uppercase tracking-tighter text-center">Tambah Ternak Baru</h3>
-            <form id="addForm" class="space-y-5">
-                <div class="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center">
-                    <label class="text-[10px] font-black text-gray-400 uppercase mb-2">Pilih Foto Hewan</label>
-                    <input type="file" id="inputFoto" accept="image/*" class="text-xs">
+    <div class="max-w-4xl mx-auto p-4">
+        <!-- HEADER -->
+        <header class="text-center py-12">
+            <h1 class="text-6xl md:text-7xl font-brand text-white">PUTRA BAROKAH FARM</h1>
+            <p class="text-green-400 font-bold tracking-[0.3em] mt-1 uppercase text-xs">Premium Dorper Breeder & Livestock</p>
+            <div id="authStatus" class="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center"></div>
+            <div class="flex justify-center gap-3">
+                <button id="btnLogin" class="mt-4 bg-white/10 text-white border border-white/20 px-6 py-2 rounded-full text-xs font-bold hidden">LOGIN ADMIN</button>
+                <button id="btnLogout" onclick="auth.signOut()" class="mt-4 bg-red-600/80 text-white px-6 py-2 rounded-full text-xs font-bold hidden">KELUAR</button>
+            </div>
+        </header>
+
+        <!-- MENU NAVIGASI (STAT CARDS) -->
+        <div class="grid grid-cols-3 gap-3 mb-10 text-center">
+            <div onclick="filterCategory('Indukan')" class="card-stat glass p-4 rounded-[2rem] shadow-2xl border-b-4 border-pink-500 cursor-pointer hover:bg-pink-50">
+                <h3 class="text-gray-400 text-[10px] font-black uppercase">Indukan</h3>
+                <p id="totalIndukan" class="text-4xl font-black text-pink-600">0</p>
+            </div>
+            <div onclick="filterCategory('Pejantan')" class="card-stat glass p-4 rounded-[2rem] shadow-2xl border-b-4 border-blue-500 cursor-pointer hover:bg-blue-50">
+                <h3 class="text-gray-400 text-[10px] font-black uppercase">Pejantan</h3>
+                <p id="totalPejantan" class="text-4xl font-black text-blue-600">0</p>
+            </div>
+            <div onclick="filterCategory('Cempe')" class="card-stat glass p-4 rounded-[2rem] shadow-2xl border-b-4 border-yellow-500 cursor-pointer hover:bg-yellow-50">
+                <h3 class="text-gray-400 text-[10px] font-black uppercase">Cempe</h3>
+                <p id="totalCempe" class="text-4xl font-black text-yellow-600">0</p>
+            </div>
+        </div>
+
+        <!-- TAMPILAN DAFTAR TERNAK -->
+        <div id="containerList" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="categoryTitle" class="text-2xl font-black text-white uppercase tracking-tighter italic">Daftar Ternak</h2>
+                <button onclick="hideList()" class="bg-white/20 text-white px-4 py-1 rounded-full text-xs font-bold border border-white/30 tracking-widest">TUTUP X</button>
+            </div>
+            <div id="listDomba" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Data muncul di sini -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FORM TAMBAH -->
+    <div id="formModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="glass w-full max-w-lg rounded-[2.5rem] p-8 relative shadow-2xl">
+            <button onclick="toggleForm()" class="absolute top-6 right-6 text-gray-400 hover:text-red-500 font-bold text-2xl">✕</button>
+            <h2 class="text-2xl font-black text-gray-800 mb-6 uppercase tracking-tighter italic">Tambah Ternak Baru</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2">
+                    <label class="text-[10px] font-black text-gray-400 uppercase">Nama / Tag</label>
+                    <input type="text" id="nama" class="w-full border-2 border-gray-100 p-3 rounded-2xl focus:border-green-500 outline-none font-bold">
                 </div>
-
-                <input type="text" id="inputNama" required placeholder="Nama / No. Tag (Contoh: A123)" class="w-full border-2 border-gray-100 rounded-2xl p-5 font-bold outline-none focus:border-green-600 shadow-sm">
-
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="inputKategori" onchange="checkAnakan()" class="w-full border-2 border-gray-100 rounded-2xl p-5 font-bold outline-none bg-gray-50">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase">Kategori</label>
+                    <select id="kategori" onchange="checkCempe()" class="w-full border-2 border-gray-100 p-3 rounded-2xl focus:border-green-500 outline-none font-bold">
                         <option value="Indukan">Indukan</option>
                         <option value="Pejantan">Pejantan</option>
-                        <option value="Anakan">Anakan</option>
-                    </select>
-                    <select id="inputJK" class="w-full border-2 border-gray-100 rounded-2xl p-5 font-bold outline-none bg-gray-50">
-                        <option value="Betina">Betina</option>
-                        <option value="Jantan">Jantan</option>
+                        <option value="Cempe">Cempe</option>
                     </select>
                 </div>
-
-                <div id="formAnakan" class="hidden space-y-4 p-6 bg-green-50 rounded-[2rem] border-2 border-green-100">
-                    <p class="text-[10px] font-black text-green-700 uppercase tracking-widest text-center">Data Silsilah & Kelahiran</p>
-                    <div class="grid grid-cols-2 gap-3">
-                        <select id="selectInduk" class="w-full border rounded-xl p-3 text-xs font-bold"></select>
-                        <select id="selectPejantan" class="w-full border rounded-xl p-3 text-xs font-bold"></select>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase">Berat (kg)</label>
+                    <input type="number" id="berat" class="w-full border-2 border-gray-100 p-3 rounded-2xl outline-none font-bold">
+                </div>
+                <div class="col-span-2">
+                    <label class="text-[10px] font-black text-gray-400 uppercase">Tgl Lahir</label>
+                    <input type="date" id="tglLahir" class="w-full border-2 border-gray-100 p-3 rounded-2xl outline-none font-bold">
+                </div>
+                <div id="cempeExtra" class="hidden col-span-2 grid grid-cols-2 gap-3 bg-green-50 p-4 rounded-2xl border-2 border-green-100">
+                    <div>
+                        <label class="text-[9px] font-black text-green-700 uppercase">Ibu</label>
+                        <select id="indukIbu" class="w-full p-2 rounded-xl text-sm"></select>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="date" id="inputTglLahir" class="w-full border rounded-xl p-3 text-xs font-bold">
-                        <input type="number" step="0.1" id="inputBobotLahir" placeholder="Bobot (KG)" class="w-full border rounded-xl p-3 text-xs font-bold">
+                    <div>
+                        <label class="text-[9px] font-black text-green-700 uppercase">Ayah</label>
+                        <select id="indukAyah" class="w-full p-2 rounded-xl text-sm"></select>
                     </div>
                 </div>
-
-                <button type="submit" class="w-full bg-green-800 text-white py-6 rounded-[2rem] font-black uppercase shadow-2xl hover:bg-green-700 transition tracking-widest">Simpan Data Online</button>
-                <button type="button" onclick="closeAddModal()" class="w-full text-gray-400 font-bold uppercase text-[10px] tracking-widest text-center">Batalkan</button>
-            </form>
+                <div class="col-span-2">
+                    <label class="text-[10px] font-black text-green-600 uppercase">Foto Ternak</label>
+                    <input type="file" id="fotoInput" accept="image/*" class="w-full text-xs mt-1">
+                </div>
+            </div>
+            <button id="btnSimpan" class="w-full mt-8 bg-green-700 text-white py-4 rounded-2xl font-black shadow-xl hover:bg-green-800 transition-all">SIMPAN DATA</button>
         </div>
     </div>
 
     <!-- MODAL DETAIL -->
-    <div id="modalDetail" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-[3rem] w-full max-w-xl overflow-hidden shadow-2xl">
-            <div id="detailContent" class="p-10 text-center"></div>
-            <button onclick="toggleModal('modalDetail')" class="w-full bg-gray-100 py-6 font-black uppercase tracking-[0.2em] text-gray-400 hover:text-green-800 transition">Tutup Detail</button>
+    <div id="detailModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div class="glass w-full max-w-md rounded-[3rem] overflow-hidden relative shadow-2xl">
+            <button onclick="closeDetail()" class="absolute top-5 right-5 z-10 bg-white/80 w-10 h-10 rounded-full text-gray-800 font-bold text-xl">✕</button>
+            <div id="detailContent"></div>
         </div>
     </div>
 
-    <!-- SCRIPT FIREBASE & LOGIKA -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // CONFIG FIREBASE ANDA
+    <script>
+        // --- KONFIGURASI FIREBASE ---
         const firebaseConfig = {
-            apiKey: "AIzaSyAFhZU97rb8vBWKjVDIgevIjrWI4dzraBw",
-            authDomain: "farmbarokah.firebaseapp.com",
-            databaseURL: "https://farmbarokah-default-rtdb.firebaseio.com",
-            projectId: "farmbarokah",
-            storageBucket: "farmbarokah.firebasestorage.app",
-            messagingSenderId: "848574881754",
-            appId: "1:848574881754:web:7888fe12cbdb39e7e0eae3",
-            measurementId: "G-ZCB6DPQ1FH"
+            apiKey: "AIzaSy...",
+            authDomain: "putra-barokah-farm.firebaseapp.com",
+            projectId: "putra-barokah-farm",
+            storageBucket: "putra-barokah-farm.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
         };
 
-        // Inisialisasi
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const ternakRef = ref(db, 'data_ternak');
+        const ADMIN_IDS = [
+            "IfghFBl24GVPOAqyfGHNCh5E...", 
+            "uvKshTqDchhJFNDkzGEC2M..."
+        ];
 
-        let dataTernak = [];
-        let currentFilter = '';
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        // 1. Sinkronisasi Data Real-time
-        onValue(ternakRef, (snapshot) => {
-            const data = snapshot.val();
-            dataTernak = [];
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    dataTernak.push({ key: key, ...data[key] });
-                });
+        let allData = [];
+        let currentAdmin = false;
+
+        function toggleForm() { document.getElementById('formModal').classList.toggle('hidden'); document.getElementById('formModal').classList.toggle('flex'); }
+        function checkCempe() { document.getElementById('cempeExtra').classList.toggle('hidden', document.getElementById('kategori').value !== 'Cempe'); }
+        function closeDetail() { document.getElementById('detailModal').classList.add('hidden'); }
+        function hideList() { document.getElementById('containerList').classList.add('hidden'); }
+
+        // AMBIL DATA REALTIME
+        db.collection("ternak_barokah").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            allData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateStats(allData);
+            populateDropdowns(allData);
+            
+            // Refresh list jika sedang terbuka
+            const currentCat = document.getElementById('categoryTitle').innerText.replace('DAFTAR ', '');
+            if (!document.getElementById('containerList').classList.contains('hidden')) {
+                filterCategory(currentCat);
             }
-            updateStats();
-            if (currentFilter) showData(currentFilter);
         });
 
-        // 2. Fungsi-fungsi UI (Global window agar bisa dipanggil HTML)
-        window.updateStats = function() {
-            document.getElementById('count-indukan').innerText = dataTernak.filter(d => d.kategori === 'Indukan').length;
-            document.getElementById('count-pejantan').innerText = dataTernak.filter(d => d.kategori === 'Pejantan').length;
-            document.getElementById('count-anakan').innerText = dataTernak.filter(d => d.kategori === 'Anakan').length;
+        function filterCategory(cat) {
+            const filtered = allData.filter(d => d.kategori === cat);
+            document.getElementById('categoryTitle').innerText = "DAFTAR " + cat;
+            renderList(filtered);
+            document.getElementById('containerList').classList.remove('hidden');
         }
 
-        window.showData = function(category) {
-            currentFilter = category;
-            const section = document.getElementById('data-section');
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '';
-            
-            const filtered = dataTernak.filter(d => d.kategori === category);
-            document.getElementById('table-title').innerText = `Kelompok: ${category}`;
-
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-gray-400 font-black uppercase">Belum ada data ${category}</td></tr>`;
-            } else {
-                filtered.forEach(item => {
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-white/50 transition animate-fade">
-                            <td class="px-8 py-4 text-center"><img src="${item.foto}" class="img-table mx-auto shadow-md cursor-pointer hover:scale-105 transition" onclick="viewDetail('${item.key}')"></td>
-                            <td class="px-8 py-4 cursor-pointer" onclick="viewDetail('${item.key}')"><div class="font-black uppercase tracking-tighter">${item.nama}</div><div class="text-[9px] text-green-600 font-bold">${item.id}</div></td>
-                            <td class="px-8 py-4 text-center font-black ${item.jk === 'Jantan' ? 'text-blue-500' : 'text-pink-500'} text-xs">${item.jk === 'Jantan' ? '♂ JANTAN' : '♀ BETINA'}</td>
-                            <td class="px-8 py-4 text-center"><button onclick="deleteData('${item.key}')" class="text-red-300 hover:text-red-600 transition p-2"><i class="fas fa-trash-alt"></i></button></td>
-                        </tr>`;
-                });
-            }
-            section.style.display = 'block';
-            setTimeout(() => section.style.opacity = '1', 10);
-            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-card-indukan', 'active-card-pejantan', 'active-card-anakan'));
-            document.getElementById(`card-${category}`).classList.add(`active-card-${category.toLowerCase()}`);
+        function renderList(data) {
+            const container = document.getElementById('listDomba');
+            container.innerHTML = '';
+            data.forEach(item => {
+                const deleteBtn = currentAdmin ? `<button onclick="event.stopPropagation(); hapusTernak('${item.id}', '${item.nama}')" class="bg-red-100 p-2 rounded-lg text-red-600 hover:bg-red-600 hover:text-white transition-colors">🗑️</button>` : '';
+                
+                container.innerHTML += `
+                    <div onclick="showDetail('${item.id}')" class="glass p-4 rounded-[2rem] shadow-xl flex gap-5 border border-white hover:scale-[1.02] transition-transform cursor-pointer relative">
+                        <img src="${item.foto || 'https://via.placeholder.com/150'}" class="w-24 h-24 object-cover rounded-2xl shadow-inner bg-gray-100">
+                        <div class="flex-1 py-1">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[9px] font-black px-3 py-1 rounded-full ${item.kategori === 'Cempe' ? 'bg-yellow-100 text-yellow-700' : (item.kategori === 'Pejantan' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700')} uppercase">${item.kategori}</span>
+                                ${deleteBtn}
+                            </div>
+                            <h4 class="text-xl font-black text-gray-800 mt-1 uppercase">${item.nama}</h4>
+                            <p class="text-xs text-gray-400 font-bold italic">⚖️ ${item.berat} kg | 🎂 ${item.tglLahir}</p>
+                            ${item.kategori === 'Cempe' ? `<p class="text-[9px] mt-2 text-blue-500 font-bold uppercase tracking-tighter">Silsilah ➔</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        window.hideData = function() { 
-            const s = document.getElementById('data-section');
-            s.style.opacity = '0';
-            setTimeout(() => s.style.display = 'none', 300);
-            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-card-indukan', 'active-card-pejantan', 'active-card-anakan'));
-        }
-
-        window.openAddModal = function() {
-            const iSel = document.getElementById('selectInduk');
-            const pSel = document.getElementById('selectPejantan');
-            iSel.innerHTML = '<option value="">Pilih Induk (Ibu)...</option>';
-            pSel.innerHTML = '<option value="">Pilih Pejantan (Ayah)...</option>';
-            dataTernak.filter(d => d.kategori === 'Indukan').forEach(d => iSel.innerHTML += `<option value="${d.nama}">${d.nama}</option>`);
-            dataTernak.filter(d => d.kategori === 'Pejantan').forEach(d => pSel.innerHTML += `<option value="${d.nama}">${d.nama}</option>`);
-            document.getElementById('modalAdd').classList.remove('hidden');
-        }
-
-        window.checkAnakan = function() {
-            const kat = document.getElementById('inputKategori').value;
-            document.getElementById('formAnakan').classList.toggle('hidden', kat !== 'Anakan');
-        }
-
-        window.deleteData = function(key) {
-            if(confirm('Hapus data ternak ini dari server? Perubahan akan terlihat di semua perangkat.')) {
-                const itemRef = ref(db, `data_ternak/${key}`);
-                remove(itemRef);
+        async function hapusTernak(id, nama) {
+            if (confirm(`⚠️ HAPUS DATA: Apakah Anda yakin ingin menghapus "${nama}" dari sistem Putra Barokah?`)) {
+                try {
+                    await db.collection('ternak_barokah').doc(id).delete();
+                    alert("Data berhasil dihapus.");
+                } catch (e) {
+                    alert("Error hapus: " + e.message);
+                }
             }
         }
 
-        window.viewDetail = function(key) {
-            const d = dataTernak.find(item => item.key === key);
-            let silsilahHtml = '';
-            if(d.kategori === 'Anakan') {
-                silsilahHtml = `
-                <div class="mt-8 border-t pt-6 grid grid-cols-2 gap-4">
-                    <div class="bg-pink-50 p-4 rounded-3xl border border-pink-100">
-                        <p class="text-[9px] font-black text-pink-400 uppercase italic">Induk (Ibu)</p>
-                        <p class="font-black text-gray-800">${d.mother || '-'}</p>
+        function showDetail(id) {
+            const item = allData.find(d => d.id === id);
+            if (!item) return;
+            const ibu = allData.find(d => d.nama === item.ibu) || { foto: 'https://via.placeholder.com/150?text=No+Photo' };
+            const ayah = allData.find(d => d.nama === item.ayah) || { foto: 'https://via.placeholder.com/150?text=No+Photo' };
+
+            const content = `
+                <img src="${item.foto || 'https://via.placeholder.com/400'}" class="w-full h-64 object-cover">
+                <div class="p-8">
+                    <div class="flex justify-between items-start mb-6">
+                        <div><h2 class="text-3xl font-black text-gray-800 uppercase">${item.nama}</h2><p class="text-sm font-bold text-gray-400 uppercase tracking-widest">${item.kategori}</p></div>
+                        <div class="text-right"><p class="text-2xl font-black text-green-600">${item.berat} kg</p><p class="text-[10px] font-bold text-gray-400 tracking-widest uppercase">${item.tglLahir}</p></div>
                     </div>
-                    <div class="bg-blue-50 p-4 rounded-3xl border border-blue-100">
-                        <p class="text-[9px] font-black text-blue-400 uppercase italic">Pejantan (Ayah)</p>
-                        <p class="font-black text-gray-800">${d.father || '-'}</p>
-                    </div>
-                    <div class="col-span-2 bg-yellow-50 p-4 rounded-3xl border border-yellow-100 flex justify-around">
-                        <div><p class="text-[9px] font-black text-yellow-600 uppercase">Tgl Lahir</p><p class="font-black">${d.birth}</p></div>
-                        <div><p class="text-[9px] font-black text-yellow-600 uppercase">Bobot Lahir</p><p class="font-black">${d.weight} KG</p></div>
-                    </div>
-                </div>`;
-            }
-            document.getElementById('detailContent').innerHTML = `
-                <img src="${d.foto}" class="w-48 h-48 object-cover rounded-[3rem] shadow-2xl border-4 border-yellow-400 mx-auto mb-6">
-                <h4 class="text-4xl font-black text-gray-900 uppercase tracking-tighter">${d.nama}</h4>
-                <p class="text-green-700 font-black text-sm tracking-[0.2em] mb-2 uppercase">${d.id} | ${d.kategori}</p>
-                ${silsilahHtml}
+                    ${item.kategori === 'Cempe' ? `
+                        <div class="mt-8 border-t pt-6">
+                            <h3 class="text-xs font-black text-gray-800 uppercase mb-4 tracking-widest border-l-4 border-yellow-500 pl-3 italic">Garis Keturunan</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center"><img src="${ibu.foto}" class="w-full h-32 object-cover rounded-2xl shadow-md border-2 border-pink-100"><p class="text-[10px] font-black mt-2 text-pink-600 uppercase">Ibu: ${item.ibu}</p></div>
+                                <div class="text-center"><img src="${ayah.foto}" class="w-full h-32 object-cover rounded-2xl shadow-md border-2 border-blue-100"><p class="text-[10px] font-black mt-2 text-blue-600 uppercase">Ayah: ${item.ayah}</p></div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
             `;
-            document.getElementById('modalDetail').classList.remove('hidden');
+            document.getElementById('detailContent').innerHTML = content;
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.getElementById('detailModal').classList.add('flex');
         }
 
-        // 3. Simpan Data ke Firebase
-        document.getElementById('addForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const file = document.getElementById('inputFoto').files[0];
-            
-            const saveAction = (imgUrl) => {
-                const kat = document.getElementById('inputKategori').value;
-                const newTernak = {
-                    id: 'PBF-' + Math.floor(100 + Math.random() * 899),
-                    foto: imgUrl || 'https://via.placeholder.com/300?text=No+Photo',
-                    nama: document.getElementById('inputNama').value,
-                    kategori: kat,
-                    jk: document.getElementById('inputJK').value,
-                    mother: kat === 'Anakan' ? document.getElementById('selectInduk').value : null,
-                    father: kat === 'Anakan' ? document.getElementById('selectPejantan').value : null,
-                    birth: kat === 'Anakan' ? (document.getElementById('inputTglLahir').value || '-') : '-',
-                    weight: kat === 'Anakan' ? (document.getElementById('inputBobotLahir').value || '0') : '-'
-                };
-                
-                push(ternakRef, newTernak); // SIMPAN KE CLOUD
-                
-                document.getElementById('modalAdd').classList.add('hidden');
-                this.reset();
-                document.getElementById('formAnakan').classList.add('hidden');
-            };
+        function updateStats(data) {
+            document.getElementById('totalIndukan').innerText = data.filter(d => d.kategori === 'Indukan').length;
+            document.getElementById('totalPejantan').innerText = data.filter(d => d.kategori === 'Pejantan').length;
+            document.getElementById('totalCempe').innerText = data.filter(d => d.kategori === 'Cempe').length;
+        }
 
+        function populateDropdowns(data) {
+            const ibu = document.getElementById('indukIbu');
+            const ayah = document.getElementById('indukAyah');
+            ibu.innerHTML = '<option value="-">-</option>'; ayah.innerHTML = '<option value="-">-</option>';
+            data.forEach(d => {
+                if(d.kategori === 'Indukan') ibu.innerHTML += `<option value="${d.nama}">${d.nama}</option>`;
+                if(d.kategori === 'Pejantan') ayah.innerHTML += `<option value="${d.nama}">${d.nama}</option>`;
+            });
+        }
+
+        document.getElementById('btnSimpan').onclick = async () => {
+            const file = document.getElementById('fotoInput').files[0];
+            const saveBtn = document.getElementById('btnSimpan');
+            if(!document.getElementById('nama').value) return alert("Nama wajib diisi!");
+            
+            saveBtn.disabled = true; saveBtn.innerText = "MENYIMPAN...";
+            
+            let base64 = "";
             if(file) {
                 const reader = new FileReader();
-                reader.onloadend = () => saveAction(reader.result);
                 reader.readAsDataURL(file);
+                reader.onload = async () => {
+                    base64 = reader.result;
+                    processSave(base64);
+                };
             } else {
-                saveAction();
+                processSave("");
+            }
+        };
+
+        async function processSave(foto) {
+            await db.collection('ternak_barokah').add({
+                nama: document.getElementById('nama').value,
+                kategori: document.getElementById('kategori').value,
+                tglLahir: document.getElementById('tglLahir').value,
+                berat: document.getElementById('berat').value,
+                foto: foto,
+                ibu: document.getElementById('indukIbu').value,
+                ayah: document.getElementById('indukAyah').value,
+                createdAt: new Date()
+            });
+            document.getElementById('btnSimpan').disabled = false;
+            document.getElementById('btnSimpan').innerText = "SIMPAN DATA";
+            document.getElementById('nama').value = '';
+            document.getElementById('berat').value = '';
+            toggleForm();
+        }
+
+        auth.onAuthStateChanged(user => {
+            currentAdmin = user && ADMIN_IDS.includes(user.uid);
+            document.getElementById('adminMenu').classList.toggle('hidden', !currentAdmin);
+            document.getElementById('btnLogout').classList.toggle('hidden', !currentAdmin);
+            document.getElementById('btnLogin').classList.toggle('hidden', currentAdmin);
+            document.getElementById('authStatus').innerText = currentAdmin ? "OPERATOR: " + user.email : "MODE: MONITORING PETERNALAN";
+            
+            // Refresh list agar tombol hapus muncul/hilang sesuai login
+            if (!document.getElementById('containerList').classList.contains('hidden')) {
+                const currentCat = document.getElementById('categoryTitle').innerText.replace('DAFTAR ', '');
+                filterCategory(currentCat);
             }
         });
 
-        window.toggleModal = (id) => document.getElementById(id).classList.toggle('hidden');
-        window.closeAddModal = () => document.getElementById('modalAdd').classList.add('hidden');
-
+        document.getElementById('btnLogin').onclick = () => {
+            const email = prompt("Email Admin:"); const pass = prompt("Password:");
+            if(email && pass) auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Akses Ditolak!"));
+        };
     </script>
 </body>
 </html>
