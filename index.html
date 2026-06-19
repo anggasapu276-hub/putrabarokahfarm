@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PUTRA BAROKAH FARM</title>
+<title>𝐏𝐮𝐭𝐫𝐚 𝐛𝐚𝐫𝐨𝐤𝐚𝐡 𓃵</title>
+<!-- PENAMBAHAN LOGO PADA TAB (FAVICON) -->
+<link rel="icon" type="image/png" href="https://files.catbox.moe/3w0di0.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syncopate:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
@@ -47,32 +50,67 @@ font-weight: 900; font-style: italic;
 }
 @keyframes flowHD { to { background-position: 200% center; } }
 
-/* KOTAK DASHBOARD RAMPING */
-.tech-card {
+/* ANIMASI GRADIENT BERGERAK */
+@keyframes moveGradient {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+
+/* GAYA TOMBOL 3D (DASHBOARD & BARU) */
+.tech-card, #btnSimpan, .tech-card-item, .fab-gold {
 position: relative;
-background: #0f172a;
-height: 80px;
+background: linear-gradient(270deg, #000000, #b89f1a, #2d3a08, #000000);
+background-size: 400% 400%;
+transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+cursor: pointer;
+border: 1px solid rgba(255,255,255,0.1);
+color: white;
+text-transform: uppercase;
+font-weight: 900;
+}
+
+.tech-card {
+height: 80px; padding: 0 1.5rem !important; margin-bottom: 1.2rem;
 display: flex; align-items: center; justify-content: space-between;
-padding: 0 1.5rem !important;
-transition: 0.4s;
-clip-path: polygon(0% 0%, 96% 0%, 100% 20%, 100% 100%, 4% 100%, 0% 80%);
-margin-bottom: 0.8rem;
-cursor: pointer; overflow: hidden;
+border-radius: 15px;
+box-shadow: 0 8px 0 #1a1d04, 0 15px 20px rgba(0,0,0,0.3);
 }
-.tech-card::before {
-content: ""; position: absolute; width: 200%; height: 200%;
-background: conic-gradient(from 0deg, transparent, transparent, var(--gold-bright), transparent);
-animation: rotateBorder 3s linear infinite; z-index: 0;
+
+/* KARTU ITEM LIST (TEMA EMAS KEHIJAUAN HITAM) */
+.tech-card-item {
+border-radius: 18px;
+overflow: hidden;
+box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+border: 1px solid #b89f1a;
 }
-.tech-card::after {
-content: ""; position: absolute; background: #0f172a;
-inset: 2px; z-index: 1;
-clip-path: polygon(0% 0%, 96% 0%, 100% 20%, 100% 100%, 4% 100%, 0% 80%);
+
+/* TOMBOL TAMBAH (+) BERGERAK */
+.fab-gold {
+width: 55px; height: 55px;
+border-radius: 50%;
+font-size: 28px;
+display: flex; align-items: center; justify-content: center;
+box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+animation: moveGradient 3s ease infinite;
+border: 2px solid var(--gold);
 }
-@keyframes rotateBorder { 100% { transform: rotate(360deg); } }
-.tech-card > * { position: relative; z-index: 2; }
-.tech-card h3 { font-size: 0.9rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; }
-.tech-card .count { font-size: 2.8rem; font-weight: 900; color: #ffffff; }
+
+#btnSimpan { width: 100%; padding: 1rem; margin-top: 1rem; border-radius: 15px; box-shadow: 0 6px 0 #1a1d04; }
+
+/* HOVER & ACTIVE */
+.tech-card:hover, #btnSimpan:hover, .tech-card-item:hover, .fab-gold:hover {
+animation: moveGradient 3s ease infinite;
+transform: translateY(2px);
+}
+
+.tech-card:active, #btnSimpan:active, .fab-gold:active {
+transform: translateY(8px);
+box-shadow: 0 0px 0 #1a1d04;
+}
+
+.tech-card h3 { font-size: 1rem; letter-spacing: 3px; z-index: 5; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+.tech-card .count { font-size: 2.8rem; z-index: 5; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
 
 /* NAV BAR */
 .top-status-bar {
@@ -83,19 +121,21 @@ height: 70px;
 }
 #liveClock { font-family: 'Orbitron', sans-serif; color: #0f172a; font-weight: 900; font-size: 1.4rem; }
 
-/* MODAL & DETAIL STYLE */
+/* MODAL TEMA GELAP EMAS */
 .modal-content {
-background: white;
+background: linear-gradient(135deg, #0a0f02 0%, #1a1d04 100%);
+border: 2px solid #b89f1a;
 border-radius: 24px;
 overflow: hidden;
 width: 100%;
 max-width: 500px;
-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+color: white;
 }
 .detail-media-box {
 width: 100%;
 height: 350px;
-background: #eee;
+background: #000;
 position: relative;
 overflow: hidden;
 cursor: zoom-in;
@@ -110,9 +150,10 @@ width: 100%;
 height: 100px;
 border-radius: 12px;
 overflow: hidden;
-cursor: zoom-in; /* Menandakan bisa diklik */
-background: #f1f5f9;
+cursor: zoom-in;
+background: #000;
 margin-bottom: 4px;
+border: 1px solid #b89f1a;
 }
 .parent-img-box img {
 width: 100%;
@@ -120,7 +161,14 @@ height: 100%;
 object-fit: cover;
 }
 
-input, select { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; padding: 10px; border-radius: 8px; }
+input, select {
+background: rgba(0,0,0,0.5) !important;
+border: 1px solid #b89f1a !important;
+color: white !important;
+padding: 10px;
+border-radius: 8px;
+}
+label { color: var(--gold); font-size: 9px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -131,8 +179,8 @@ input, select { background: #f8fafc !important; border: 1px solid #cbd5e1 !impor
 <div class="vignette"></div>
 
 <!-- NAV BAR -->
-<nav class="fixed top-0 left-0 w-full z-[200] top-status-bar px-5 flex justify-between items-center">
-<span class="text-[8px] font-bold text-slate-700 uppercase tracking-[2px]">Premium Quality</span>
+<nav class="fixed top-0 left-0 w-full z-[200] top-status-bar px-4 flex justify-between items-center">
+<img src="https://files.catbox.moe/3w0di0.png" alt="Logo" class="h-16 w-auto">
 <div class="absolute left-1/2 -translate-x-1/2 text-center">
 <p id="liveClock">00.00.00</p>
 <p id="liveDate" class="text-[8px] text-slate-500 tracking-[4px] uppercase font-bold"></p>
@@ -146,10 +194,9 @@ input, select { background: #f8fafc !important; border: 1px solid #cbd5e1 !impor
 <main class="relative pt-28 pb-20 px-6 max-w-4xl mx-auto">
 <header class="mb-10 text-center">
 <h1 class="title-main text-5xl md:text-7xl italic uppercase leading-tight">PUTRA BAROKAH<br><span class="text-slate-800">FARM</span></h1>
-<p class="text-[9px] font-['Orbitron'] tracking-[8px] text-slate-1000 mt-2 uppercase font-bold">GENERASI PETERNAK MODERN</p>
+<p class="text-[10px] font-['Orbitron'] tracking-[8px] text-slate-1000 mt-2 uppercase font-bold">GENERASI PETERNAK MODERN</p>
 </header>
 
-<!-- DASHBOARD RAMPING -->
 <section class="grid grid-cols-1 gap-2 mb-8">
 <div onclick="filterCategory('Indukan')" class="tech-card"><h3>Indukan</h3><div class="count" id="totalIndukan">0</div></div>
 <div onclick="filterCategory('Pejantan')" class="tech-card"><h3>Pejantan</h3><div class="count" id="totalPejantan">0</div></div>
@@ -161,39 +208,38 @@ input, select { background: #f8fafc !important; border: 1px solid #cbd5e1 !impor
 <h2 id="categoryTitle" class="text-xl font-black text-slate-900 italic uppercase">Archive</h2>
 <button onclick="hideList()" class="text-[9px] font-bold bg-slate-900 text-white px-2 py-1 rounded tracking-widest">CLOSE X</button>
 </div>
-<div id="listDomba" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+<div id="listDomba" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
 </div>
 </main>
 
-<div id="adminMenu" class="fixed bottom-6 right-6 z-[300] hidden">
-<button onclick="toggleForm()" class="w-12 h-12 bg-slate-900 text-white rounded-full text-2xl shadow-xl hover:scale-110">+</button>
+<!-- TOMBOL TAMBAH DATA (ANIMASI BERGERAK) -->
+<div id="adminMenu" class="fixed bottom-8 right-8 z-[300] hidden">
+<button onclick="toggleForm()" class="fab-gold">+</button>
 </div>
 
 <!-- FORM TAMBAH DATA -->
-<div id="formModal" class="fixed inset-0 z-[400] bg-black/60 flex items-center justify-center hidden p-4 backdrop-blur-sm">
-<div class="modal-content p-6 bg-white">
-<h2 class="text-lg font-black text-slate-900 mb-4 uppercase border-b border-slate-900 pb-1">Input Ternak Baru</h2>
+<div id="formModal" class="fixed inset-0 z-[400] bg-black/70 flex items-center justify-center hidden p-4 backdrop-blur-md">
+<div class="modal-content p-6">
+<h2 class="text-lg font-black text-gold mb-4 uppercase border-b border-gold pb-1">Input Ternak Baru</h2>
 <div class="space-y-3">
-<input type="text" id="nama" placeholder="NAMA TERNAK">
+<input type="text" id="nama" placeholder="NAMA TERNAK" class="w-full">
 <div class="grid grid-cols-2 gap-2">
-<select id="kategori" onchange="handleCategoryChange()">
+<select id="kategori" onchange="handleCategoryChange()" class="w-full">
 <option value="Indukan">Indukan</option>
 <option value="Pejantan">Pejantan</option>
 <option value="Cempe">Cempe</option>
 </select>
-<input type="number" id="berat" placeholder="KG">
+<input type="number" id="berat" placeholder="KG" class="w-full">
 </div>
-<input type="date" id="tglLahir">
-
-<div id="silsilahBox" class="hidden space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+<input type="date" id="tglLahir" class="w-full">
+<div id="silsilahBox" class="hidden space-y-2 bg-black/40 p-3 rounded-lg border border-gold/30">
 <div class="grid grid-cols-2 gap-2">
-<div><label class="text-[8px] font-bold uppercase block mb-1">Ibu (Dam)</label><select id="selectMamak"></select></div>
-<div><label class="text-[8px] font-bold uppercase block mb-1">Ayah (Sire)</label><select id="selectBapak"></select></div>
+<div><label class="uppercase block mb-1">Ibu (Dam)</label><select id="selectMamak" class="w-full"></select></div>
+<div><label class="uppercase block mb-1">Ayah (Sire)</label><select id="selectBapak" class="w-full"></select></div>
 </div>
 </div>
-
-<input type="file" id="fileUtama" class="text-[10px]">
-<button onclick="simpanData()" id="btnSimpan" class="w-full bg-slate-900 text-white py-3 font-black uppercase rounded-lg text-sm">UPLOAD DATA</button>
+<input type="file" id="fileUtama" class="text-[10px] w-full">
+<button onclick="simpanData()" id="btnSimpan">UPLOAD DATA</button>
 <button onclick="toggleForm()" class="w-full text-slate-400 text-[9px] font-bold uppercase mt-2">Batal</button>
 </div>
 </div>
@@ -201,31 +247,29 @@ input, select { background: #f8fafc !important; border: 1px solid #cbd5e1 !impor
 
 <!-- DETAIL MODAL -->
 <div id="detailModal" class="fixed inset-0 z-[500] bg-black/90 flex items-center justify-center hidden p-4">
-<div class="modal-content bg-white shadow-2xl border border-slate-200">
-<!-- FOTO UTAMA KLIKABLE -->
+<div class="modal-content">
 <div id="detMediaUtama" class="detail-media-box"></div>
-
 <div class="p-5">
-<div class="flex justify-between items-center mb-5">
-<h2 id="detNama" class="text-3xl font-black text-slate-900 uppercase italic"></h2>
-<p id="detBerat" class="text-2xl font-black text-slate-700"></p>
+<div class="flex justify-between items-start mb-5">
+<div>
+<h2 id="detNama" class="text-3xl font-black text-white uppercase italic leading-none"></h2>
+<p id="detUmur" class="text-gold font-bold text-[11px] mt-1 tracking-widest"></p>
 </div>
-
-<!-- SILSILAH KLIKABLE (KHUSUS CEMPE) -->
+<p id="detBerat" class="text-2xl font-black text-gold"></p>
+</div>
 <div id="detSilsilahBox" class="hidden grid grid-cols-2 gap-3 mb-6">
 <div class="text-center">
-<p class="text-[8px] text-blue-600 font-black uppercase mb-1 tracking-widest">Sire (Ayah)</p>
+<p class="text-[8px] text-blue-400 font-black uppercase mb-1 tracking-widest">Sire (Ayah)</p>
 <div id="detMediaBapak" class="parent-img-box"></div>
-<p id="detNamaBapak" class="font-bold text-[10px] uppercase truncate text-slate-800"></p>
+<p id="detNamaBapak" class="font-bold text-[10px] uppercase truncate text-slate-200"></p>
 </div>
 <div class="text-center">
-<p class="text-[8px] text-pink-600 font-black uppercase mb-1 tracking-widest">Dam (Ibu)</p>
+<p class="text-[8px] text-pink-400 font-black uppercase mb-1 tracking-widest">Dam (Ibu)</p>
 <div id="detMediaMamak" class="parent-img-box"></div>
-<p id="detNamaMamak" class="font-bold text-[10px] uppercase truncate text-slate-800"></p>
+<p id="detNamaMamak" class="font-bold text-[10px] uppercase truncate text-slate-200"></p>
 </div>
 </div>
-
-<button onclick="document.getElementById('detailModal').classList.add('hidden')" class="w-full bg-slate-900 text-white py-3 font-black text-[10px] uppercase tracking-[10px] rounded-xl shadow-lg">KEMBALI</button>
+<button onclick="document.getElementById('detailModal').classList.add('hidden')" class="w-full bg-gold text-white py-3 font-black text-[10px] uppercase tracking-[10px] rounded-xl shadow-lg">KEMBALI</button>
 </div>
 </div>
 </div>
@@ -246,6 +290,18 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore(), auth = firebase.auth();
 let allData = [];
 let isAdmin = false;
+
+function hitungUmur(tglLahir) {
+if (!tglLahir) return "";
+const birth = new Date(tglLahir);
+const now = new Date();
+const diffTime = Math.abs(now - birth);
+const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+if (diffDays < 30) return diffDays + " HARI";
+const months = Math.floor(diffDays / 30);
+const days = diffDays % 30;
+return months + " BULAN " + (days > 0 ? days + " HARI" : "");
+}
 
 function updateClock() {
 const now = new Date();
@@ -288,7 +344,7 @@ function toggleForm() { document.getElementById('formModal').classList.toggle('h
 function hideList() { document.getElementById('containerList').classList.add('hidden'); }
 
 function renderMedia(url, css) {
-if(!url) return `<div class="bg-slate-200 w-full h-full flex items-center justify-center text-[8px] text-slate-400 italic">No Media</div>`;
+if(!url) return `<div class="bg-slate-900 w-full h-full flex items-center justify-center text-[8px] text-slate-400 italic">No Media</div>`;
 return url.includes(".mp4") ? `<video src="${url}" class="${css}" autoplay loop muted playsinline></video>` : `<img src="${url}" class="${css}" loading="lazy">`;
 }
 
@@ -320,7 +376,7 @@ media: dC.secure_url,
 createdAt: firebase.firestore.FieldValue.serverTimestamp()
 });
 alert("Berhasil!"); location.reload();
-} catch (e) { alert("Error!"); btn.disabled = false; }
+} catch (e) { alert("Error!"); btn.disabled = false; btn.innerText = "UPLOAD DATA"; }
 }
 
 function filterCategory(cat) {
@@ -328,12 +384,17 @@ document.getElementById('categoryTitle').innerText = cat;
 const container = document.getElementById('listDomba'); container.innerHTML = '';
 allData.filter(d => d.kategori === cat).forEach(item => {
 const card = document.createElement('div');
-card.className = "bg-white rounded-2xl overflow-hidden border border-slate-900 cursor-pointer shadow-md";
+card.className = "tech-card-item cursor-pointer";
 card.onclick = () => showDetail(item);
-card.innerHTML = `<div class="h-28 w-full">${renderMedia(item.media, 'w-full h-full object-cover')}</div>
-<div class="p-2"><h4 class="text-[10px] font-black uppercase text-slate-900 truncate">${item.nama}</h4>
-<p class="text-[9px] text-slate-500 font-bold mt-1">${item.berat} KG</p>
-${isAdmin ? `<button onclick="event.stopPropagation(); hapus('${item.id}')" class="mt-2 text-red-600 text-[8px] font-black uppercase">Delete</button>` : ''}
+const infoUmur = item.kategori === 'Cempe' ? `<p class="text-[7px] text-white/60 uppercase">UMUR: ${hitungUmur(item.tglLahir)}</p>` : '';
+card.innerHTML = `<div class="h-28 w-full border-b border-gold/20">${renderMedia(item.media, 'w-full h-full object-cover')}</div>
+<div class="p-3">
+<h4 class="text-[10px] font-black uppercase text-white truncate tracking-wider">${item.nama}</h4>
+<div class="flex justify-between items-center mt-1">
+<p class="text-[9px] text-gold font-bold">${item.berat} KG</p>
+${infoUmur}
+</div>
+${isAdmin ? `<button onclick="event.stopPropagation(); hapus('${item.id}')" class="mt-2 text-red-500 text-[8px] font-black uppercase">Delete</button>` : ''}
 </div>`;
 container.appendChild(card);
 });
@@ -344,31 +405,29 @@ window.scrollTo({ top: document.getElementById('containerList').offsetTop - 100,
 function showDetail(item) {
 document.getElementById('detNama').innerText = item.nama;
 document.getElementById('detBerat').innerText = item.berat + " KG";
-
-// FOTO UTAMA KLIKABLE
+const detUmur = document.getElementById('detUmur');
+if(item.kategori === 'Cempe' && item.tglLahir) {
+detUmur.innerText = "UMUR: " + hitungUmur(item.tglLahir);
+detUmur.classList.remove('hidden');
+} else {
+detUmur.classList.add('hidden');
+}
 const mediaBox = document.getElementById('detMediaUtama');
 mediaBox.innerHTML = renderMedia(item.media, 'w-full h-full object-cover');
 mediaBox.onclick = () => window.open(item.media, '_blank');
-
-// SILSILAH KLIKABLE (KHUSUS CEMPE)
 const isCempe = item.kategori === 'Cempe';
 const detSilsilahBox = document.getElementById('detSilsilahBox');
 detSilsilahBox.classList.toggle('hidden', !isCempe);
-
 if(isCempe) {
-// Foto Bapak Clickable
 const bapakBox = document.getElementById('detMediaBapak');
 bapakBox.innerHTML = renderMedia(item.fotoBapak, 'w-full h-full object-cover');
 bapakBox.onclick = () => item.fotoBapak ? window.open(item.fotoBapak, '_blank') : null;
 document.getElementById('detNamaBapak').innerText = item.bapak || "-";
-
-// Foto Mamak Clickable
 const mamakBox = document.getElementById('detMediaMamak');
 mamakBox.innerHTML = renderMedia(item.fotoMamak, 'w-full h-full object-cover');
 mamakBox.onclick = () => item.fotoMamak ? window.open(item.fotoMamak, '_blank') : null;
 document.getElementById('detNamaMamak').innerText = item.mamak || "-";
 }
-
 document.getElementById('detailModal').classList.remove('hidden');
 }
 
